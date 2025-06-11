@@ -24,7 +24,7 @@ db.sqlite3-journal
 
 # Jangan commit file yang dikumpulkan oleh 'collectstatic'
 # Direktori ini akan dibuat di server saat deployment
-/staticfiles/
+
 
 ### File Log & Laporan ###
 *.log
