@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-s0_r&ua-f@#fn-jt(l5mq=sj$0!7pe__s=y7og559_5@!#yr!z
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['*','fetopsisv2-production.up.railway.app']
 
 
 # Application definition
