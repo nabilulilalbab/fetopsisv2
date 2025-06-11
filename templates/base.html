@@ -1,0 +1,63 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Dashboard utama sistem pendukung keputusan TOPSIS. Akses fitur perhitungan, riwayat, dan tutorial." />
+  <title>{{ title }}</title>
+
+  <!-- Tailwind CSS -->
+  <link rel="stylesheet" href="{% static 'src/output.css' %}" />
+  <!-- Optional CDN fallback (jika local tidak termuat dengan baik) -->
+
+
+  <style>
+    /* Loading spinner */
+    .loading {
+      display: none;
+    }
+    .loading.active {
+      display: flex;
+    }
+
+    /* Pesan error & sukses */
+    .error-message {
+      color: #dc2626;
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+    }
+    .success-message {
+      color: #16a34a;
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+    }
+
+    /* Card hover effect */
+    .feature-card {
+      transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+      height: 100%;
+    }
+    .feature-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+    }
+  </style>
+</head>
+
+<body class="flex flex-col min-h-screen bg-gray-100 font-sans text-gray-900">
+
+
+    <main class="flex-grow">
+        <div class="container mx-auto px-4 py-8">
+            {% block content %}
+            {% endblock content %}
+        </div>
+    </main>
+
+    <footer class="border-t bg-white">
+        {% include 'footer.html' %}
+    </footer>
+
+</body>
+</html>

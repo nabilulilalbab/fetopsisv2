@@ -1,0 +1,211 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ title }}{% endblock title %}
+
+{% block content %}
+{% include 'navbar.html' %}
+
+<body class="bg-gray-100 font-sans">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+    {% if detail and not error %}
+        <header class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <div class="flex flex-col md:flex-row justify-between items-start">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-800">{{ detail.name }}</h1>
+                    <p class="mt-2 text-sm text-gray-500">ID: <span class="font-mono">#{{ detail.id }}</span></p>
+                    <div class="mt-2 text-xs text-gray-400 space-x-4">
+                        <span>Dibuat: <span class="font-mono">{{ detail.created_at|date:"d M Y, H:i" }}</span></span>
+                        <span>Diupdate: <span class="font-mono">{{ detail.updated_at|date:"d M Y, H:i" }}</span></span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3 mt-4 md:mt-0 flex-shrink-0">
+                    <a href="{% url 'frontend:topsis_history' %}" class="text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg px-4 py-2">← History</a>
+                    <a href="{% url 'frontend:topsis_edit' detail.id %}" class="text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg px-4 py-2 shadow-sm">Edit Perhitungan</a>
+                </div>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+            <div class="lg:col-span-2 space-y-8">
+                
+                <div class="bg-white rounded-lg shadow-lg">
+                    <div class="p-6 border-b border-gray-200"><h2 class="text-xl font-bold text-gray-800">🏆 Hasil Peringkat</h2></div>
+                    <div class="p-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {% for alternative in detail.alternatives|dictsort:"rank" %}
+                        <div class="border border-gray-200 rounded-lg p-4 {% if alternative.rank == 1 %}bg-green-50 border-green-300{% endif %}">
+                            <div class="flex justify-between items-center mb-1">
+                                <h3 class="text-lg font-bold text-gray-800">{{ alternative.name }}</h3>
+                                <span class="text-white text-sm px-3 py-1 font-bold rounded-full
+                                    {% if alternative.rank == 1 %} bg-green-500
+                                    {% elif alternative.rank == 2 %} bg-yellow-500
+                                    {% elif alternative.rank == 3 %} bg-orange-500
+                                    {% else %} bg-gray-400 {% endif %}">#{{ alternative.rank }}</span>
+                            </div>
+                            <p class="text-gray-700 font-semibold">Nilai: <span class="text-blue-600 font-bold text-xl">{{ alternative.closeness_value|floatformat:4 }}</span></p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-lg">
+                    <div class="p-6 border-b border-gray-200"><h2 class="text-xl font-bold text-gray-800">📊 Tabel Nilai Detail (Weighted Normalized)</h2></div>
+                    <div class="p-6">
+                        <div class="overflow-x-auto rounded-lg border border-gray-200">
+                            <table class="min-w-full bg-white text-sm">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th rowspan="2" class="p-3 text-left font-semibold text-gray-600 border-b">Alternatif</th>
+                                        <th colspan="{{ detail.ideal_solutions|length }}" class="text-center p-3 font-semibold text-gray-600 border-b">Nilai Ternormalisasi Terbobot</th>
+                                        <th rowspan="2" class="p-3 text-left font-semibold text-gray-600 border-b">Nilai Preferensi</th>
+                                        <th rowspan="2" class="p-3 text-center font-semibold text-gray-600 border-b">Rank</th>
+                                    </tr>
+                                    <tr class="text-xs">
+                                        {% for ideal in detail.ideal_solutions %}
+                                            <th class="p-2 text-left font-medium text-gray-500 border-b border-t">{{ ideal.criteria_name }}</th>
+                                        {% endfor %}
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-200">
+                                    {% for alternative in detail.alternatives|dictsort:"rank" %}
+                                    <tr>
+                                        <td class="p-3 font-bold text-gray-800">{{ alternative.name }}</td>
+                                        {% for criteria in alternative.criteria_values %}
+                                            <td class="p-3 text-gray-600 font-mono">{{ criteria.weighted_value|floatformat:4 }}</td>
+                                        {% endfor %}
+                                        <td class="p-3 font-bold text-blue-600">{{ alternative.closeness_value|floatformat:4 }}</td>
+                                        <td class="p-3 text-center font-bold text-lg {% if alternative.rank == 1 %} text-green-600 {% else %} text-gray-700 {% endif %}">{{ alternative.rank }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow-lg">
+                    <div class="p-6 border-b border-gray-200"><h2 class="text-xl font-bold text-gray-800">🔢 Tabel Nilai Original</h2></div>
+                    <div class="p-6">
+                        <div class="overflow-x-auto rounded-lg border border-gray-200">
+                            <table class="min-w-full bg-white text-sm">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="p-3 text-left font-semibold text-gray-600">Alternatif</th>
+                                        {% for item in combined_criteria %}
+                                        <th class="p-3 text-left font-semibold text-gray-600">{{ item.name }}</th>
+                                        {% endfor %}
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-200">
+                                    {% for row in original_matrix %}
+                                    <tr>
+                                        <td class="p-3 font-bold text-gray-800">{{ row.name }}</td>
+                                        {% for value in row.values %}
+                                        <td class="p-3 text-gray-600">{{ value }}</td>
+                                        {% endfor %}
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-lg">
+                    <div class="p-6 border-b border-gray-200"><h2 class="text-xl font-bold text-gray-800">🔍 Breakdown per Alternatif</h2></div>
+                    <div class="p-6 space-y-4">
+                        {% for alternative in detail.alternatives|dictsort:"rank" %}
+                        <details class="bg-gray-50 border rounded-lg overflow-hidden">
+                            <summary class="p-4 font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 flex justify-between items-center">
+                                <span>{{ alternative.name }}</span>
+                                <span class="text-sm font-bold text-blue-600">Rank #{{ alternative.rank }}</span>
+                            </summary>
+                            <div class="p-4 border-t grid grid-cols-1 md:grid-cols-2 gap-6 bg-white">
+                                <div>
+                                    <h5 class="font-bold mb-2 text-gray-600">Nilai Ternormalisasi</h5>
+                                    <div class="space-y-1 text-sm">
+                                    {% for criteria in alternative.criteria_values %}
+                                        <div class="flex justify-between"><span>{{ criteria.criteria_name }}:</span> <span class="font-mono">{{ criteria.normalized_value|floatformat:4 }}</span></div>
+                                    {% endfor %}
+                                    </div>
+                                </div>
+                                <div>
+                                    <h5 class="font-bold mb-2 text-gray-600">Nilai Terbobot</h5>
+                                    <div class="space-y-1 text-sm">
+                                    {% for criteria in alternative.criteria_values %}
+                                        <div class="flex justify-between"><span>{{ criteria.criteria_name }}:</span> <span class="font-mono">{{ criteria.weighted_value|floatformat:4 }}</span></div>
+                                    {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </details>
+                        {% endfor %}
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="lg:col-span-1 space-y-8">
+                <div class="sticky top-8 space-y-8">
+
+                    <div class="bg-white rounded-lg shadow-lg">
+                        <div class="p-6 border-b border-gray-200"><h2 class="text-xl font-bold text-gray-800">📋 Data Awal</h2></div>
+                        <div class="p-6 space-y-4 text-sm">
+                            <div>
+                                <h3 class="font-bold text-gray-600 mb-2">Alternatif ({{ detail.raw_data.alternatives|length }})</h3>
+                                <ul class="list-disc list-inside text-gray-700">{% for alt in detail.raw_data.alternatives %}<li>{{ alt }}</li>{% endfor %}</ul>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-gray-600 mb-2">Kriteria & Bobot</h3>
+                                <div class="space-y-2">
+                                    {% for item in combined_criteria %}
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-gray-700">{{ item.name }} ({{ item.weight }})</span>
+                                        <span class="text-xs font-medium px-2.5 py-0.5 rounded-full {% if item.type == 'benefit' %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">{{ item.type|capfirst }}</span>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow-lg">
+                        <div class="p-6 border-b border-gray-200"><h2 class="text-xl font-bold text-gray-800">🎯 Solusi Ideal</h2></div>
+                        <div class="p-6 space-y-4 text-sm">
+                             <div>
+                                <h3 class="font-bold text-gray-600 mb-2">Positif (A+)</h3>
+                                <div class="space-y-1">
+                                {% for ideal in detail.ideal_solutions %}
+                                    <div class="flex justify-between text-green-700"><span>{{ ideal.criteria_name }}:</span> <span class="font-mono">{{ ideal.ideal_positive|floatformat:4 }}</span></div>
+                                {% endfor %}
+                                </div>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-gray-600 mb-2">Negatif (A-)</h3>
+                                <div class="space-y-1">
+                                {% for ideal in detail.ideal_solutions %}
+                                    <div class="flex justify-between text-red-700"><span>{{ ideal.criteria_name }}:</span> <span class="font-mono">{{ ideal.ideal_negative|floatformat:4 }}</span></div>
+                                {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+    {% else %}
+        <div class="bg-white rounded-lg shadow-lg text-center py-16 px-6">
+            <h3 class="text-xl font-bold mb-2 text-gray-800">Data Tidak Ditemukan</h3>
+            <p class="text-gray-500 mb-6">{% if error %}{{ error }}{% else %}Perhitungan dengan ID ini tidak dapat ditemukan.{% endif %}</p>
+            <a href="{% url 'frontend:topsis_history' %}" class="text-white bg-blue-600 hover:bg-blue-700 font-semibold rounded-lg px-5 py-2.5">Kembali ke History</a>
+        </div>
+    {% endif %}
+
+    </div>
+</body>
+
+{% endblock content %}

@@ -1,0 +1,202 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load dict_extras %}
+{% block title %}{{ title|default:"Hasil Perhitungan TOPSIS" }}{% endblock title %}
+
+{% block content %}
+{% include 'navbar.html' %}
+
+<body class="bg-gray-100 font-sans">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        {% if result %}
+        <div class="space-y-8">
+            <header class="bg-white rounded-lg shadow-lg p-6">
+                <div class="flex flex-col md:flex-row justify-between items-center">
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-800">Hasil Perhitungan TOPSIS</h1>
+                        <p class="mt-2 text-gray-600">Berikut adalah rincian dan peringkat dari data yang Anda masukkan.</p>
+                    </div>
+                    <div class="flex items-center gap-4 mt-4 md:mt-0">
+                        <a href="{% url 'frontend:topsis_history' %}" class="text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg px-4 py-2">Lihat History</a>
+                        <a href="{% url 'frontend:topsis_calculate' %}" class="text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg px-4 py-2">Hitung Lagi</a>
+                    </div>
+                </div>
+            </header>
+
+            <div class="bg-white rounded-lg shadow-lg">
+                <div class="p-6 border-b border-gray-200">
+                    <h2 class="text-xl font-bold text-gray-800">🏆 Peringkat Alternatif</h2>
+                </div>
+                <div class="p-6 grid md:grid-cols-2 gap-4">
+                    {% for alternative in result.data.results|dictsort:"rank" %}
+                    <div class="border border-gray-200 rounded-lg p-4 flex justify-between items-start 
+                        {% if alternative.rank == 1 %} bg-green-50 border-green-300 {% endif %}">
+                        <div>
+                            <h3 class="text-lg font-bold text-gray-800">{{ alternative.name }}</h3>
+                            <p class="text-gray-700 font-semibold">
+                                Nilai Preferensi: <span class="text-blue-600">{{ alternative.closenessvalue|floatformat:4 }}</span>
+                            </p>
+                            {% if alternative.positivedistance %}
+                            <small class="text-gray-500">Jarak Ideal (+): {{ alternative.positivedistance|floatformat:4 }} / (-): {{ alternative.negativedistance|floatformat:4 }}</small>
+                            {% endif %}
+                        </div>
+                        <span class="text-white text-sm px-3 py-1 font-bold rounded-full
+                            {% if alternative.rank == 1 %} bg-green-500
+                            {% elif alternative.rank == 2 %} bg-yellow-500
+                            {% elif alternative.rank == 3 %} bg-orange-500
+                            {% else %} bg-gray-400 {% endif %}">
+                            #{{ alternative.rank }}
+                        </span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-lg">
+                 <div class="p-6 border-b border-gray-200">
+                    <h2 class="text-xl font-bold text-gray-800">📊 Tabel Detail (Weighted Normalized)</h2>
+                </div>
+                <div class="p-6">
+                    <div class="overflow-x-auto rounded-lg border border-gray-200">
+                        <table class="min-w-full bg-white">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="p-3 text-left text-sm font-semibold text-gray-600">Alternatif</th>
+                                    {% for criterion in original_criteria %}
+                                        <th class="p-3 text-left text-sm font-semibold text-gray-600">{{ criterion.name }}</th>
+                                    {% endfor %}
+                                    <th class="p-3 text-left text-sm font-semibold text-gray-600">Nilai Preferensi</th>
+                                    <th class="p-3 text-center text-sm font-semibold text-gray-600">Peringkat</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                {% for alternative in result.data.results|dictsort:"rank" %}
+                                <tr>
+                                    <td class="p-3 whitespace-nowrap font-bold text-gray-800">{{ alternative.name }}</td>
+                                    {% for criterion in original_criteria %}
+                                        <td class="p-3 whitespace-nowrap text-gray-600">{{ alternative.WeightedValues|lookup:criterion.name|floatformat:4 }}</td>
+                                    {% endfor %}
+                                    <td class="p-3 whitespace-nowrap font-bold text-blue-600">{{ alternative.closenessvalue|floatformat:4 }}</td>
+                                    <td class="p-3 whitespace-nowrap text-center font-bold text-lg
+                                        {% if alternative.rank == 1 %} text-green-600
+                                        {% elif alternative.rank == 2 %} text-yellow-600
+                                        {% elif alternative.rank == 3 %} text-orange-600
+                                        {% else %} text-gray-500 {% endif %}">
+                                        {{ alternative.rank }}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid lg:grid-cols-5 gap-8">
+                <div class="lg:col-span-2 bg-white rounded-lg shadow-lg p-6 space-y-4 h-full">
+                    <div>
+                        <h3 class="text-lg font-bold mb-2 text-gray-800">Solusi Ideal Positif (A+)</h3>
+                        <div class="text-sm space-y-1 bg-green-50 p-3 rounded-md">
+                        {% for key, value in result.data.idealPositive.items %}
+                            <div class="flex justify-between text-gray-700"><span>{{ key }}:</span><strong class="text-green-700">{{ value|floatformat:4 }}</strong></div>
+                        {% endfor %}
+                        </div>
+                    </div>
+                     <div>
+                        <h3 class="text-lg font-bold mb-2 text-gray-800">Solusi Ideal Negatif (A-)</h3>
+                        <div class="text-sm space-y-1 bg-red-50 p-3 rounded-md">
+                        {% for key, value in result.data.idealNegative.items %}
+                            <div class="flex justify-between text-gray-700"><span>{{ key }}:</span><strong class="text-red-700">{{ value|floatformat:4 }}</strong></div>
+                        {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <div class="lg:col-span-3 bg-white rounded-lg shadow-lg p-6">
+                    <h2 class="text-xl font-bold mb-2 text-gray-800">Simpan Hasil Perhitungan</h2>
+                    <p class="text-gray-600 mb-4">Masukkan nama yang deskriptif untuk perhitungan ini agar mudah dicari kembali di history.</p>
+                    <form id="save-form">
+                        {% csrf_token %}
+                        <input type="text" name="calculation_name" id="calculation_name" placeholder="Contoh: Pemilihan Laptop Terbaik 2025"
+                               required class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 py-3 px-4 mb-4"/>
+                        <button type="submit" id="save-btn" class="w-full bg-indigo-600 text-white font-bold px-4 py-3 hover:bg-indigo-700 rounded-lg shadow flex items-center justify-center">
+                            <span id="save-text">Simpan ke History</span>
+                            <span id="save-loading" class="hidden">
+                                <svg class="animate-spin h-5 w-5 text-white mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                Menyimpan...
+                            </span>
+                        </button>
+                    </form>
+                    <div id="save-result" class="mt-4"></div>
+                </div>
+            </div>
+
+        </div>
+        {% else %}
+        <div class="bg-white rounded-lg shadow-lg p-12 text-center">
+            <h3 class="text-xl font-bold mb-2 text-gray-800">Tidak Ada Hasil</h3>
+            <p class="text-gray-600 mb-6">Silakan lakukan perhitungan terlebih dahulu untuk melihat hasilnya di sini.</p>
+            <a href="{% url 'frontend:topsis_calculate' %}" class="bg-blue-600 text-white font-bold px-6 py-3 hover:bg-blue-700 rounded-lg">Mulai Perhitungan</a>
+        </div>
+        {% endif %}
+    </div>
+
+  <script>
+    document.getElementById('save-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const saveBtn = document.getElementById('save-btn');
+      const saveText = document.getElementById('save-text');
+      const saveLoading = document.getElementById('save-loading');
+      const resultDiv = document.getElementById('save-result');
+      resultDiv.innerHTML = ''; // Clear previous messages
+
+      saveBtn.disabled = true;
+      saveText.classList.add('hidden');
+      saveLoading.classList.remove('hidden');
+
+      const formData = new FormData(this);
+
+      fetch('{% url "frontend:topsis_save" %}', {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          resultDiv.innerHTML = `
+            <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-md" role="alert">
+                <p class="font-bold">Berhasil!</p>
+                <p>${data.message} (ID: ${data.calculation_id})</p>
+            </div>`;
+          document.getElementById('calculation_name').value = '';
+        } else {
+          resultDiv.innerHTML = `
+            <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-md" role="alert">
+                <p class="font-bold">Gagal!</p>
+                <p>${data.message || 'Terjadi kesalahan yang tidak diketahui.'}</p>
+            </div>`;
+        }
+      })
+      .catch((error) => {
+        resultDiv.innerHTML = `
+            <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-md" role="alert">
+                <p class="font-bold">Error Jaringan</p>
+                <p>Tidak dapat terhubung ke server. Silakan coba lagi.</p>
+            </div>`;
+      })
+      .finally(() => {
+        saveBtn.disabled = false;
+        saveText.classList.remove('hidden');
+        saveLoading.classList.add('hidden');
+      });
+    });
+  </script>
+</body>
+
+{% endblock content %}

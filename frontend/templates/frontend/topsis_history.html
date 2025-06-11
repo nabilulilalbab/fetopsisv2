@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ title|default:"History Perhitungan" }}{% endblock title %}
+
+{% block content %}
+{% include 'navbar.html' %}
+
+<body class="bg-gray-100 font-sans">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <header class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-800">History Perhitungan</h1>
+                    <p class="mt-2 text-gray-600">Lihat semua perhitungan yang pernah Anda simpan.</p>
+                </div>
+                <div class="flex items-center gap-4 mt-4 md:mt-0">
+                    <a href="{% url 'frontend:dashboard' %}" class="text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg px-4 py-2">← Kembali ke Dashboard</a>
+                    <a href="{% url 'frontend:topsis_calculate' %}" class="text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg px-4 py-2 shadow-sm">+ Perhitungan Baru</a>
+                </div>
+            </div>
+        </header>
+
+        {% if error %}
+            <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded-lg shadow" role="alert">
+                <p class="font-bold">Gagal Memuat Data</p>
+                <p>{{ error }}</p>
+            </div>
+        {% endif %}
+
+        {% if history %}
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                
+                {% for calculation in history %}
+                <div class="bg-white rounded-lg shadow-lg flex flex-col overflow-hidden transform hover:-translate-y-1.5 transition-transform duration-300">
+                    <a href="{% url 'frontend:topsis_detail' calculation.ID %}" class="flex flex-col h-full">
+                        <div class="p-5 border-b border-gray-200">
+                            <h2 class="text-lg font-bold text-gray-800 truncate">{{ calculation.Name }}</h2>
+                            <p class="text-xs text-gray-400">ID: #{{ calculation.ID }}</p>
+                        </div>
+
+                        <div class="p-5 space-y-4 flex-grow">
+                            <div>
+                                <h3 class="text-sm font-semibold text-gray-500 mb-2">Kriteria ({{ calculation.IdealSolutions|length }})</h3>
+                                <div class="flex flex-wrap gap-2">
+                                    {% for ideal in calculation.IdealSolutions|slice:":4" %}
+                                    <span class="bg-indigo-100 text-indigo-800 text-xs font-medium px-2.5 py-0.5 rounded-full">{{ ideal.CriteriaName }}</span>
+                                    {% endfor %}
+                                    {% if calculation.IdealSolutions|length > 4 %}
+                                    <span class="bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded-full">+{{ calculation.IdealSolutions|length|add:"-4" }} lagi</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div>
+                                <h3 class="text-sm font-semibold text-gray-500 mb-2">Alternatif Teratas</h3>
+                                <div class="space-y-1">
+                                    {% for alternative in calculation.Alternatives|dictsort:"Rank"|slice:":3" %}
+                                    <div class="flex justify-between items-center text-sm">
+                                        <span class="text-gray-700 truncate pr-2">{{ alternative.Name }}</span>
+                                        <span class="font-mono text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded">{{ alternative.ClosenessValue|floatformat:3 }}</span>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-5 bg-gray-50 border-t border-gray-200 text-xs text-gray-500">
+                            <p>Dibuat: {{ calculation.CreatedAt|date:"d M Y, H:i" }}</p>
+                        </div>
+                    </a>
+                </div>
+                {% endfor %}
+
+            </div>
+        {% else %}
+            <div class="bg-white rounded-lg shadow-lg text-center py-16 px-6">
+                 <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                    <path vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+                </svg>
+                <h3 class="mt-4 text-xl font-bold text-gray-800">Belum Ada History Tersimpan</h3>
+                <p class="mt-2 text-gray-500 mb-6">Mulai perhitungan baru untuk melihat riwayat Anda di sini.</p>
+                <a href="{% url 'frontend:topsis_calculate' %}" class="text-white bg-blue-600 hover:bg-blue-700 font-semibold rounded-lg px-5 py-2.5">Mulai Perhitungan Pertama</a>
+            </div>
+        {% endif %}
+    </div>
+</body>
+
+{% endblock content %}

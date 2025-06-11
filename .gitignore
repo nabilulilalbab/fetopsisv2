@@ -1,0 +1,53 @@
+# .gitignore untuk proyek Python / Django
+
+### Lingkungan Virtual (Virtual Environment) ###
+# Jangan pernah commit folder environment Anda
+env/
+venv/
+.venv/
+
+### File Bytecode Python & Cache ###
+# Ini dibuat oleh Python saat runtime
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+### File Database Lokal ###
+# Abaikan database SQLite yang digunakan untuk development lokal
+db.sqlite3
+db.sqlite3-journal
+
+### File Media & Static yang Digenerate ###
+# Jangan commit file yang diupload pengguna saat aplikasi berjalan
+/media/
+
+# Jangan commit file yang dikumpulkan oleh 'collectstatic'
+# Direktori ini akan dibuat di server saat deployment
+/staticfiles/
+
+### File Log & Laporan ###
+*.log
+.coverage
+
+### File Environment & Rahasia (SANGAT PENTING!) ###
+# Jangan pernah commit file .env yang berisi SECRET_KEY, password database, dll.
+.env
+.env.*
+# Izinkan file .env.example untuk dibagikan sebagai template
+!/.env.example
+
+### Konfigurasi Editor & IDE ###
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+### File Sistem Operasi ###
+.DS_Store
+Thumbs.db
+
+### Artefak Build & Distribusi Python ###
+build/
+dist/
+*.egg-info/

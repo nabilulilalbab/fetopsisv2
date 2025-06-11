@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title|default:"Selamat Datang" }}{% endblock title %}
+
+{% block content %}
+{% include 'navbar.html' %}
+
+<body class="bg-gray-50 font-sans">
+
+    <main>
+        <div class="relative px-6 lg:px-8">
+            <div class="mx-auto max-w-3xl pt-20 pb-24 sm:pt-32 sm:pb-32">
+                <div>
+                    <div>
+                        <h1 class="text-4xl font-bold tracking-tight text-center sm:text-6xl text-gray-900">
+                            Sistem Pendukung Keputusan Penerimaan Mahasiswa Magang
+                        </h1>
+                        <p class="mt-6 text-lg leading-8 text-gray-600 text-center">
+                            Menggunakan metode <strong class="font-semibold text-indigo-600">TOPSIS</strong> untuk membantu <strong class="font-semibold text-indigo-600">Yayasan Perguruan Immanuel Medan</strong> dalam mengambil keputusan penerimaan yang lebih objektif, cepat, dan akurat. 
+                        </p>
+                        <div class="mt-8 flex gap-x-4 justify-center">
+                            <a href="{% url 'frontend:login' %}" class="inline-block rounded-lg bg-indigo-600 px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                Masuk ke Dashboard
+                            </a>
+                            <a href="{% url 'frontend:signup' %}" class="inline-block rounded-lg px-5 py-3 text-sm font-semibold leading-6 text-gray-900 ring-1 ring-gray-900/10 hover:ring-gray-900/20">
+                                Daftar Akun <span aria-hidden="true">→</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="bg-white py-24 sm:py-32">
+        <div class="mx-auto max-w-7xl px-6 lg:px-8">
+            <div class="mx-auto max-w-2xl lg:text-center">
+                <h2 class="text-base font-semibold leading-7 text-indigo-600">Solusi Modern</h2>
+                <p class="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Mengapa Menggunakan Sistem Ini?</p>
+                <p class="mt-6 text-lg leading-8 text-gray-600">
+                    Sistem ini dirancang untuk mengatasi tantangan dalam proses seleksi manual, memastikan setiap keputusan didasarkan pada data yang terukur dan konsisten. 
+                </p>
+            </div>
+            <div class="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
+                <dl class="grid max-w-xl grid-cols-1 gap-x-8 gap-y-16 lg:max-w-none lg:grid-cols-3">
+                    <div class="flex flex-col">
+                        <dt class="flex items-center gap-x-3 text-base font-semibold leading-7 text-gray-900">
+                            <svg class="h-5 w-5 flex-none text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                            </svg>
+                            Seleksi Objektif & Terukur
+                        </dt>
+                        <dd class="mt-4 flex flex-auto flex-col text-base leading-7 text-gray-600">
+                            <p class="flex-auto">Metode TOPSIS mengukur kinerja relatif setiap alternatif secara matematis, menghilangkan subjektivitas dan memastikan kandidat yang dipilih benar-benar kompeten. </p>
+                        </dd>
+                    </div>
+                    <div class="flex flex-col">
+                        <dt class="flex items-center gap-x-3 text-base font-semibold leading-7 text-gray-900">
+                            <svg class="h-5 w-5 flex-none text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            Efisiensi Waktu & Tenaga
+                        </dt>
+                        <dd class="mt-4 flex flex-auto flex-col text-base leading-7 text-gray-600">
+                            <p class="flex-auto">Menggantikan proses manual yang memakan waktu, sistem ini mengotomatiskan perhitungan kompleks sehingga pihak sekolah dapat fokus pada aspek penting lainnya. </p>
+                        </dd>
+                    </div>
+                    <div class="flex flex-col">
+                        <dt class="flex items-center gap-x-3 text-base font-semibold leading-7 text-gray-900">
+                            <svg class="h-5 w-5 flex-none text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 100 15 7.5 7.5 0 000-15z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.2-5.2" />
+                            </svg>
+                            Hasil Akurat & Cepat
+                        </dt>
+                        <dd class="mt-4 flex flex-auto flex-col text-base leading-7 text-gray-600">
+                            <p class="flex-auto">Memberikan hasil akhir berupa perangkingan yang jelas dan dapat dipertanggungjawabkan, membantu pengambil keputusan (Decision Maker) secara lebih baik dan cepat. </p>
+                        </dd>
+                    </div>
+                </dl>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-gray-50 py-24 sm:py-32">
+        <div class="mx-auto max-w-7xl px-6 lg:px-8">
+            <div class="mx-auto max-w-2xl lg:text-center">
+                <h2 class="text-base font-semibold leading-7 text-indigo-600">Transparan & Sistematis</h2>
+                <p class="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Bagaimana Cara Kerjanya?</p>
+                <p class="mt-6 text-lg leading-8 text-gray-600">
+                   Sistem ini mengikuti tahapan standar dari metode TOPSIS untuk memastikan setiap perhitungan logis dan dapat dilacak. 
+                </p>
+            </div>
+             <div class="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-4xl">
+                <ol class="space-y-4 md:flex md:space-x-8 md:space-y-0">
+                    <li class="md:flex-1">
+                        <div class="flex flex-col space-y-2 border-l-4 border-indigo-600 py-2 pl-4 md:border-l-0 md:border-t-4 md:pl-0 md:pt-4 md:pb-0">
+                            <span class="text-sm font-medium text-indigo-600">Langkah 1</span>
+                            <span class="text-xl font-semibold">Matriks & Normalisasi</span>
+                            <span class="mt-2 text-gray-500">Menyusun nilai setiap alternatif berdasarkan kriteria, lalu melakukan normalisasi untuk menghilangkan bias skala. </span>
+                        </div>
+                    </li>
+                    <li class="md:flex-1">
+                        <div class="flex flex-col space-y-2 border-l-4 border-gray-300 py-2 pl-4 md:border-l-0 md:border-t-4 md:pl-0 md:pt-4 md:pb-0">
+                            <span class="text-sm font-medium text-gray-500">Langkah 2</span>
+                            <span class="text-xl font-semibold">Pembobotan & Solusi Ideal</span>
+                            <span class="mt-2 text-gray-500">Mengalikan nilai ternormalisasi dengan bobot setiap kriteria, kemudian menentukan solusi ideal positif (terbaik) dan negatif (terburuk). </span>
+                        </div>
+                    </li>
+                    <li class="md:flex-1">
+                        <div class="flex flex-col space-y-2 border-l-4 border-gray-300 py-2 pl-4 md:border-l-0 md:border-t-4 md:pl-0 md:pt-4 md:pb-0">
+                            <span class="text-sm font-medium text-gray-500">Langkah 3</span>
+                            <span class="text-xl font-semibold">Perankingan</span>
+                            <span class="mt-2 text-gray-500">Menghitung jarak setiap alternatif ke solusi ideal, lalu menentukan nilai preferensi untuk mendapatkan peringkat akhir. </span>
+                        </div>
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white">
+        <div class="mx-auto max-w-7xl py-24 sm:px-6 sm:py-32 lg:px-8">
+            <div class="relative isolate overflow-hidden bg-gray-900 px-6 py-24 text-center shadow-2xl sm:rounded-3xl sm:px-16">
+                <h2 class="mx-auto max-w-2xl text-3xl font-bold tracking-tight text-white sm:text-4xl">Siap Mempermudah Proses Seleksi?</h2>
+                <p class="mx-auto mt-6 max-w-xl text-lg leading-8 text-gray-300">
+                    Masuk atau buat akun untuk mulai menggunakan semua fitur dan rasakan kemudahan pengambilan keputusan berbasis data.
+                </p>
+                <div class="mt-10 flex items-center justify-center gap-x-6">
+                    <a href="{% url 'frontend:login' %}" class="rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm hover:bg-gray-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">Mulai Sekarang</a>
+                    <a href="#features" class="text-sm font-semibold leading-6 text-white">Pelajari lebih lanjut <span aria-hidden="true">→</span></a>
+                </div>
+                <svg viewBox="0 0 1024 1024" class="absolute left-1/2 top-1/2 -z-10 h-[64rem] w-[64rem] -translate-x-1/2 [mask-image:radial-gradient(closest-side,white,transparent)]" aria-hidden="true">
+                    <circle cx="512" cy="512" r="512" fill="url(#827591b1-ce8c-4110-b064-7cb85a0b1217)" fill-opacity="0.7"></circle>
+                    <defs>
+                        <radialGradient id="827591b1-ce8c-4110-b064-7cb85a0b1217">
+                            <stop stop-color="#7775D6"></stop>
+                            <stop offset="1" stop-color="#E935C1"></stop>
+                        </radialGradient>
+                    </defs>
+                </svg>
+            </div>
+        </div>
+    </div>
+    
+</body>
+
+{% endblock content %}
